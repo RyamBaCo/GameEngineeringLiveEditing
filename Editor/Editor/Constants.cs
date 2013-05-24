@@ -11,7 +11,6 @@ namespace Editor
         public const string TYPE_CIRCLE = "circle";
         public const ushort RECTANGLE_EDGES = 4;
 
-        public const string HEADING_SHAPE = "Shape";
         public const string HEADING_RECTANGLE = "Rectangle";
         public const string HEADING_CIRCLE = "Circle";
 

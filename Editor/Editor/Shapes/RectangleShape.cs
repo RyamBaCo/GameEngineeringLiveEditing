@@ -17,5 +17,13 @@ namespace Editor
             Type = Constants.TYPE_RECTANGLE;
             EdgePoints = new Point[Constants.RECTANGLE_EDGES];
         }
+
+        public RectangleShape(RectangleShape shape)
+        {
+            Name = shape.Name;
+            Type = shape.Type;
+            EdgePoints = new Point[Constants.RECTANGLE_EDGES];
+            Array.Copy(shape.EdgePoints, EdgePoints, Constants.RECTANGLE_EDGES);
+        }
     }
 }

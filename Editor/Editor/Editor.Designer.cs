@@ -54,6 +54,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.menuStripEdit = new System.Windows.Forms.MenuStrip();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialogJSON = new System.Windows.Forms.SaveFileDialog();
             this.groupBoxShape.SuspendLayout();
@@ -122,13 +124,14 @@
             this.groupBoxShape.Controls.Add(this.panelRectangleSettings);
             this.groupBoxShape.Controls.Add(this.label1);
             this.groupBoxShape.Controls.Add(this.textBoxName);
-            this.groupBoxShape.Enabled = false;
-            this.groupBoxShape.Location = new System.Drawing.Point(335, 12);
+            this.groupBoxShape.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.groupBoxShape.Location = new System.Drawing.Point(334, 64);
             this.groupBoxShape.Name = "groupBoxShape";
-            this.groupBoxShape.Size = new System.Drawing.Size(388, 458);
+            this.groupBoxShape.Size = new System.Drawing.Size(388, 407);
             this.groupBoxShape.TabIndex = 5;
             this.groupBoxShape.TabStop = false;
             this.groupBoxShape.Text = "Shape";
+            this.groupBoxShape.Visible = false;
             // 
             // panelCircleSettings
             // 
@@ -380,10 +383,28 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem,
+            this.redoToolStripMenuItem,
             this.exportToJSONToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Enabled = false;
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Enabled = false;
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // exportToJSONToolStripMenuItem
             // 
@@ -462,6 +483,8 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToJSONToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialogJSON;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
     }
 }
 

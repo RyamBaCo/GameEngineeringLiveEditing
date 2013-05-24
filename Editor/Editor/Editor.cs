@@ -14,21 +14,42 @@ namespace Editor
 {
     public partial class Editor : Form
     {
+        public int ActiveEdgeIndex
+        {
+            get
+            {
+                return 0 + (radioButtonTopRight.Checked ? 1 : 0) +
+                    (radioButtonBottomLeft.Checked ? 2 : 0) +
+                    (radioButtonBottomRight.Checked ? 3 : 0); 
+            }
+
+            private set
+            {
+                radioButtonTopLeft.Checked = value <= 0;
+                radioButtonTopRight.Checked = value == 1;
+                radioButtonBottomLeft.Checked = value == 2;
+                radioButtonBottomRight.Checked = value >= 3;
+            }
+        }
+
         BindingList<Shape> shapes = new BindingList<Shape>();
+        List<WorkingAction> actions = new List<WorkingAction>();
+        int currentActionIndex = 0;
+        bool isActionTrackingDisabled = false;
 
         public Editor()
         {
             InitializeComponent();
         }
 
-        private void UpdateSettingControls()
+        private void UpdateSettingControls(int activeEdgeIndex)
         {
-            if(listBoxShapes.SelectedItem is RectangleShape)
+            if (listBoxShapes.SelectedItem is RectangleShape)
             {
                 groupBoxShape.Text = Constants.HEADING_RECTANGLE;
                 panelRectangleSettings.Visible = true;
                 panelCircleSettings.Visible = false;
-                radioButtonTopLeft.Checked = true;
+                ActiveEdgeIndex = activeEdgeIndex;
             }
             else
             {
@@ -42,11 +63,48 @@ namespace Editor
             }
         }
 
-        private int GetActiveEdgeIndex()
-        { 
-            return  0 + (radioButtonTopRight.Checked ? 1 : 0) + 
-                    (radioButtonBottomLeft.Checked ? 2 : 0) + 
-                    (radioButtonBottomRight.Checked ? 3 : 0); 
+        private void UpdateSettingControls()
+        {
+            // by default display top left point of rectangle
+            UpdateSettingControls(0);
+        }
+
+        private void AddModifyAction()
+        {
+            if(isActionTrackingDisabled)
+                return;
+            UpdateUndoRedoValues();
+
+            if (listBoxShapes.SelectedItem is RectangleShape)
+                actions.Add(new UndoRedo.WorkingActionModifyRectangle(new RectangleShape(listBoxShapes.SelectedItem as RectangleShape), ref shapes, ActiveEdgeIndex));
+            else
+                actions.Add(new UndoRedo.WorkingActionModify(new CircleShape(listBoxShapes.SelectedItem as CircleShape), ref shapes));
+        }
+
+        private void AddAddAction()
+        {
+            if (isActionTrackingDisabled)
+                return;
+            UpdateUndoRedoValues();
+            actions.Add(new UndoRedo.WorkingActionAdd(shapes[listBoxShapes.SelectedIndex], ref shapes, ref listBoxShapes, ref groupBoxShape));
+        }
+
+        private void AddDeleteAction()
+        {
+            if (isActionTrackingDisabled)
+                return;
+            UpdateUndoRedoValues();
+            actions.Add(new UndoRedo.WorkingActionDelete(shapes[listBoxShapes.SelectedIndex], ref shapes, ref listBoxShapes, ref groupBoxShape));
+        }
+
+        private void UpdateUndoRedoValues()
+        {
+            if (currentActionIndex < actions.Count)
+                actions.RemoveRange(currentActionIndex + 1, actions.Count - currentActionIndex - 1);
+            currentActionIndex = actions.Count;
+
+            undoToolStripMenuItem.Enabled = true;
+            redoToolStripMenuItem.Enabled = false;
         }
 
         private void Editor_Load(object sender, EventArgs e)
@@ -67,11 +125,13 @@ namespace Editor
             // select the last element in the listbox
             listBoxShapes.SelectedIndex = listBoxShapes.Items.Count - 1;
             buttonRemove.Enabled = true;
-            groupBoxShape.Enabled = true;
+            groupBoxShape.Visible = true;
 
             // when adding the very first shape selectedindexchanged event is not called so we need to update setting controls manually
             if (shapes.Count == 1)
                 UpdateSettingControls();
+
+            AddAddAction();
         }
 
         private void listBoxShapes_SelectedIndexChanged(object sender, EventArgs e)
@@ -92,6 +152,8 @@ namespace Editor
 
         private void textBoxName_Validated(object sender, EventArgs e)
         {
+            if(listBoxShapes.Items.Count > 0)
+                AddModifyAction();
             // refresh listbox when new text has been typed
             // since RefreshItems is declared as private we need to do a little hack here to call this function
             typeof(ListBox).InvokeMember("RefreshItems",
@@ -100,15 +162,13 @@ namespace Editor
 
         private void buttonRemove_Click(object sender, EventArgs e)
         {
+            AddDeleteAction();
             shapes.RemoveAt(listBoxShapes.SelectedIndex);
 
             if (listBoxShapes.Items.Count <= 0)
             {
                 buttonRemove.Enabled = false;
-                groupBoxShape.Enabled = false;
-                groupBoxShape.Text = Constants.HEADING_SHAPE;
-                panelCircleSettings.Visible = false;
-                panelRectangleSettings.Visible = false;
+                groupBoxShape.Visible = false;
             }
         }
 
@@ -120,11 +180,18 @@ namespace Editor
                 return;
             }
 
-            (shapes[listBoxShapes.SelectedIndex] as RectangleShape).EdgePoints[GetActiveEdgeIndex()] = 
+            AddModifyAction();
+
+            (shapes[listBoxShapes.SelectedIndex] as RectangleShape).EdgePoints[ActiveEdgeIndex] = 
                 new Point(Convert.ToInt32(numericUpDownEdgeX.Value), Convert.ToInt32(numericUpDownEdgeY.Value));
         }
 
         private void radioButtonEdge_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateEdgePointValues();
+        }
+
+        private void UpdateEdgePointValues()
         {
             if (!(shapes[listBoxShapes.SelectedIndex] is RectangleShape))
             {
@@ -132,7 +199,7 @@ namespace Editor
                 return;
             }
 
-            Point selectedEdgePoint = (shapes[listBoxShapes.SelectedIndex] as RectangleShape).EdgePoints[GetActiveEdgeIndex()];
+            Point selectedEdgePoint = (shapes[listBoxShapes.SelectedIndex] as RectangleShape).EdgePoints[ActiveEdgeIndex];
             numericUpDownEdgeX.Value = selectedEdgePoint.X;
             numericUpDownEdgeY.Value = selectedEdgePoint.Y;
         }
@@ -144,6 +211,8 @@ namespace Editor
                 MessageBox.Show(Constants.ERROR_NO_CIRCLE);
                 return;
             }
+
+            AddModifyAction();
 
             (shapes[listBoxShapes.SelectedIndex] as CircleShape).Center =
                new Point(Convert.ToInt32(numericUpDownCenterX.Value), Convert.ToInt32(numericUpDownCenterY.Value));
@@ -157,6 +226,8 @@ namespace Editor
                 return;
             }
 
+            AddModifyAction();
+
             (shapes[listBoxShapes.SelectedIndex] as CircleShape).Radius = Convert.ToUInt32(numericUpDownRadius.Value);
         }
 
@@ -167,6 +238,55 @@ namespace Editor
                 using (TextWriter textWriter = new StreamWriter(saveFileDialogJSON.FileName))
                     textWriter.Write(JsonConvert.SerializeObject(shapes));
             }
+        }
+
+        private void UpdateShapeValuesAfterUndoRedo()
+        {
+            // when there are no values there is nothing to update
+            if (listBoxShapes.Items.Count == 0)
+                return;
+
+            if (actions[currentActionIndex] is UndoRedo.WorkingActionModifyRectangle)
+            {
+                int currentEdgeIndex = (actions[currentActionIndex] as UndoRedo.WorkingActionModifyRectangle).ActiveEdgeIndex;
+                if (currentEdgeIndex == ActiveEdgeIndex)
+                    UpdateEdgePointValues();
+                UpdateSettingControls(currentEdgeIndex);
+            }
+            else
+                UpdateSettingControls();
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isActionTrackingDisabled = true;
+
+            actions[currentActionIndex].Undo();
+            UpdateShapeValuesAfterUndoRedo();
+
+            if (currentActionIndex == 0)
+                undoToolStripMenuItem.Enabled = false;
+            --currentActionIndex;
+            
+            redoToolStripMenuItem.Enabled = true;
+
+            isActionTrackingDisabled = false;
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            isActionTrackingDisabled = true;
+
+            ++currentActionIndex;
+            if (currentActionIndex == actions.Count - 1)
+                redoToolStripMenuItem.Enabled = false;
+
+            actions[currentActionIndex].Redo();
+            UpdateShapeValuesAfterUndoRedo();
+            
+            undoToolStripMenuItem.Enabled = true;
+
+            isActionTrackingDisabled = false;
         }
     }
 }

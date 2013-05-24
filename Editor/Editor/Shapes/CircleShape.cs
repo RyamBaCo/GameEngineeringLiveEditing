@@ -19,5 +19,12 @@ namespace Editor
             Type = Constants.TYPE_CIRCLE;
             Radius = 1;
         }
+
+        public CircleShape(CircleShape shape)
+        {
+            Name = shape.Name;
+            Center = new Point(shape.Center.X, shape.Center.Y);
+            Radius = shape.Radius;
+        }
     }
 }
