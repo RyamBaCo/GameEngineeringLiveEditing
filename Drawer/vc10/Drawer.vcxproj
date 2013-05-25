@@ -109,6 +109,7 @@
     <ClCompile Include="..\src\JsonParser.cpp" />
     <ClCompile Include="..\src\RectangleShape.cpp" />
     <ClCompile Include="..\src\Shape.cpp" />
+    <ClCompile Include="..\src\TcpShapeClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
@@ -118,6 +119,7 @@
     <ClInclude Include="..\src\RectangleShape.h" />
     <ClInclude Include="..\src\Shape.h" />
     <ClInclude Include="..\src\ShapeValues.h" />
+    <ClInclude Include="..\src\TcpShapeClient.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />

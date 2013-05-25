@@ -36,6 +36,7 @@ namespace Editor
         List<WorkingAction> actions = new List<WorkingAction>();
         int currentActionIndex = 0;
         bool isActionTrackingDisabled = false;
+        TCP.Server server = new TCP.Server();
 
         public Editor()
         {
@@ -79,6 +80,8 @@ namespace Editor
                 actions.Add(new UndoRedo.WorkingActionModifyRectangle(new RectangleShape(listBoxShapes.SelectedItem as RectangleShape), ref shapes, ActiveEdgeIndex));
             else
                 actions.Add(new UndoRedo.WorkingActionModify(new CircleShape(listBoxShapes.SelectedItem as CircleShape), ref shapes));
+
+            server.MessageToSend = JsonConvert.SerializeObject(shapes);
         }
 
         private void AddAddAction()
@@ -87,6 +90,8 @@ namespace Editor
                 return;
             UpdateUndoRedoValues();
             actions.Add(new UndoRedo.WorkingActionAdd(shapes[listBoxShapes.SelectedIndex], ref shapes, ref listBoxShapes, ref groupBoxShape));
+
+            server.MessageToSend = JsonConvert.SerializeObject(shapes);
         }
 
         private void AddDeleteAction()
@@ -95,6 +100,8 @@ namespace Editor
                 return;
             UpdateUndoRedoValues();
             actions.Add(new UndoRedo.WorkingActionDelete(shapes[listBoxShapes.SelectedIndex], ref shapes, ref listBoxShapes, ref groupBoxShape));
+
+            server.MessageToSend = JsonConvert.SerializeObject(shapes);
         }
 
         private void UpdateUndoRedoValues()

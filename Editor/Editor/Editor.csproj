@@ -61,6 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapes\RectangleShape.cs" />
     <Compile Include="Shapes\Shape.cs" />
+    <Compile Include="TCP\Server.cs" />
     <Compile Include="UndoRedo\WorkingAction.cs" />
     <Compile Include="UndoRedo\WorkingActionAdd.cs" />
     <Compile Include="UndoRedo\WorkingActionDelete.cs" />

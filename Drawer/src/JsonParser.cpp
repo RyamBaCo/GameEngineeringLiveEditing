@@ -18,7 +18,7 @@ bool JsonParser::parse(const std::string& fileName, std::list<Shape*>& shapeList
 		delete *it;
 	shapeList.clear();
 
-	JsonTree doc( loadFile( fs::path( getAppPath().generic_string() + fileName ) ) );
+	JsonTree doc(fileName);
 	std::list<JsonTree> shapes = doc.getChildren();
 
 	for(JsonTree::ConstIter shape = shapes.begin(); shape != shapes.end(); ++shape)
