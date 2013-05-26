@@ -44,8 +44,8 @@ void TcpShapeClient::connect(const std::string &ip, unsigned short port)
 
 void TcpShapeClient::connect(boost::asio::ip::tcp::endpoint& endpoint)
 {
-	if(isConnected) return;
-	if(isClosing) return;
+	if(isConnected || isClosing) 
+		return;
 
 	endPoint = endpoint;
 	socket.async_connect(endpoint,
@@ -95,7 +95,7 @@ void TcpShapeClient::handle_connect(const boost::system::error_code& error)
 	else 
 	{
 		isConnected = false;
-		ci::app::console() << "Server error:" << error.message() << std::endl;
+		ci::app::console() << "Server error: " << error.message() << std::endl;
 
 		// schedule a timer to reconnect after 5 seconds		
 		reconnectTimer.expires_from_now(boost::posix_time::seconds(5));

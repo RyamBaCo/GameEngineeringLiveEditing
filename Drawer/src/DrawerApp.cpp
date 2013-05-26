@@ -1,3 +1,5 @@
+#include <boost/thread/mutex.hpp>
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "JsonParser.h"
@@ -11,34 +13,39 @@ class DrawerApp : public AppBasic
 {
 public:
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void shutdown();
 	void update();
 	void draw();
 
-	void onConnected(const boost::asio::ip::tcp::endpoint&);
-	void onDisconnected(const boost::asio::ip::tcp::endpoint&);
-	void onMessage(const std::string&);
+	void onConnected(const boost::asio::ip::tcp::endpoint& endPoint);
+	void onDisconnected(const boost::asio::ip::tcp::endpoint& endPoint);
+	void onMessage(const std::string& message);
 
 private:
-	std::list<Shape*> shapes;
-	TcpShapeClient	tcpClient;
-	std::string		receivedJSON;
+	std::list<Shape*>	shapes;
+	TcpShapeClient		tcpClient;
+	std::string			receivedJSON;
+
+	boost::mutex		jsonMutex;
 };
 
 void DrawerApp::setup()
 {
-	tcpClient.sConnected.connect(boost::bind( &DrawerApp::onConnected, this, boost::arg<1>::arg()));
+	receivedJSON = "";
+
+	tcpClient.sConnected.connect(boost::bind(&DrawerApp::onConnected, this, boost::arg<1>::arg()));
 	tcpClient.sDisconnected.connect(boost::bind(&DrawerApp::onDisconnected, this, boost::arg<1>::arg()));
-	tcpClient.sMessage.connect(boost::bind( &DrawerApp::onMessage, this, boost::arg<1>::arg()));
+	tcpClient.sMessage.connect(boost::bind(&DrawerApp::onMessage, this, boost::arg<1>::arg()));
 
 	tcpClient.setDelimiter("\r\n");
 	tcpClient.connect("127.0.0.1", 3000);
-
-	receivedJSON = "";
 }
 
-void DrawerApp::mouseDown( MouseEvent event )
+void DrawerApp::shutdown()
 {
+	for(auto it = shapes.begin(); it != shapes.end(); ++it)
+		delete *it;
+	shapes.clear();
 }
 
 void DrawerApp::update()
@@ -47,6 +54,7 @@ void DrawerApp::update()
 
 	if(receivedJSON != "")
 	{
+		boost::mutex::scoped_lock(jsonMutex);
 		JsonParser::parse(receivedJSON, shapes);
 		receivedJSON = "";
 	}
@@ -60,20 +68,21 @@ void DrawerApp::draw()
 		(*it)->draw();
 }
 
-void DrawerApp::onConnected(const boost::asio::ip::tcp::endpoint &endpoint)
+void DrawerApp::onConnected(const boost::asio::ip::tcp::endpoint& endPoint)
 {
-	console() << "Connected to:" << endpoint.address().to_string() << std::endl;
+	console() << "Connected to: " << endPoint.address().to_string() << std::endl;
 }
 
-void DrawerApp::onDisconnected(const boost::asio::ip::tcp::endpoint &endpoint)
+void DrawerApp::onDisconnected(const boost::asio::ip::tcp::endpoint& endPoint)
 {
-	console() << "Disconnected from:" << endpoint.address().to_string() << std::endl;
+	console() << "Disconnected from: " << endPoint.address().to_string() << std::endl;
 	console() << "Trying to reconnect in 5 seconds." << std::endl;
 }
 
-void DrawerApp::onMessage(const std::string &msg)
+void DrawerApp::onMessage(const std::string &message)
 {
-	receivedJSON = msg;
+	boost::mutex::scoped_lock(jsonMutex);
+	receivedJSON = message;
 }
 
 CINDER_APP_BASIC( DrawerApp, RendererGl )

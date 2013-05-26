@@ -19,7 +19,13 @@ namespace Editor.TCP
 
             tcpListener = new TcpListener(IPAddress.Any, 3000);
             listenThread = new Thread(new ThreadStart(ListenForClients));
+            listenThread.IsBackground = true;
             listenThread.Start();
+        }
+
+        public void Shutdown()
+        {
+            listenThread.Abort();
         }
 
         private void ListenForClients()
@@ -33,6 +39,7 @@ namespace Editor.TCP
             {
                 TcpClient client = this.tcpListener.AcceptTcpClient();
                 Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+                clientThread.IsBackground = true;
                 clientThread.Start(client);
 
                 while (client.Connected)
@@ -55,36 +62,34 @@ namespace Editor.TCP
 
         private void HandleClientComm(object client)
         {
-            TcpClient tcpClient = (TcpClient)client;
-            NetworkStream clientStream = tcpClient.GetStream();
-
-            byte[] message = new byte[4096];
-            int bytesRead;
-
-            while (true)
+            using (TcpClient tcpClient = (TcpClient)client)
             {
-                bytesRead = 0;
+                NetworkStream clientStream = tcpClient.GetStream();
 
-                try
-                {
-                    bytesRead = clientStream.Read(message, 0, 4096);
-                }
-                catch
-                {
-                    break;
-                }
+                byte[] message = new byte[4096];
+                int bytesRead;
 
-                // disconnect
-                if (bytesRead == 0)
+                while (true)
                 {
-                    break;
-                }
+                    bytesRead = 0;
 
-                ASCIIEncoding encoder = new ASCIIEncoding();
-                System.Diagnostics.Debug.WriteLine(encoder.GetString(message, 0, bytesRead));
+                    try
+                    {
+                        bytesRead = clientStream.Read(message, 0, 4096);
+                    }
+                    catch
+                    {
+                        break;
+                    }
+
+                    // disconnect
+                    if (bytesRead == 0)
+                        break;
+
+                    ASCIIEncoding encoder = new ASCIIEncoding();
+                    System.Diagnostics.Debug.WriteLine(encoder.GetString(message, 0, bytesRead));
+                }
             }
-
-            tcpClient.Close();
         }
         
     }

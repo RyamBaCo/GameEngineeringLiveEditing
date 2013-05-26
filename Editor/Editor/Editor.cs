@@ -19,16 +19,16 @@ namespace Editor
             get
             {
                 return 0 + (radioButtonTopRight.Checked ? 1 : 0) +
-                    (radioButtonBottomLeft.Checked ? 2 : 0) +
-                    (radioButtonBottomRight.Checked ? 3 : 0); 
+                    (radioButtonBottomRight.Checked ? 2 : 0) +
+                    (radioButtonBottomLeft.Checked ? 3 : 0); 
             }
 
             private set
             {
                 radioButtonTopLeft.Checked = value <= 0;
                 radioButtonTopRight.Checked = value == 1;
-                radioButtonBottomLeft.Checked = value == 2;
-                radioButtonBottomRight.Checked = value >= 3;
+                radioButtonBottomRight.Checked = value == 2;
+                radioButtonBottomLeft.Checked = value >= 3;
             }
         }
 
@@ -41,6 +41,30 @@ namespace Editor
         public Editor()
         {
             InitializeComponent();
+        }
+
+        private void Editor_Load(object sender, EventArgs e)
+        {
+            listBoxShapes.DisplayMember = Constants.DISPLAY_MEMBER;
+            listBoxShapes.DataSource = shapes;
+            textBoxName.DataBindings.Add(Constants.BINDING_TEXT, shapes, Constants.BINDING_NAME);
+            panelCircleSettings.Location = panelRectangleSettings.Location;
+
+            #region register undo/redo handlers
+
+            buttonAddRectangle.Click += new System.EventHandler(AddAddAction);
+            buttonAddCircle.Click += new System.EventHandler(AddAddAction);
+
+            textBoxName.Validated += new System.EventHandler(AddModifyAction);
+            numericUpDownEdgeX.ValueChanged += new System.EventHandler(AddModifyAction);
+            numericUpDownEdgeY.ValueChanged += new System.EventHandler(AddModifyAction);
+            numericUpDownCenterX.ValueChanged += new System.EventHandler(AddModifyAction);
+            numericUpDownCenterY.ValueChanged += new System.EventHandler(AddModifyAction);
+            numericUpDownRadius.ValueChanged += new System.EventHandler(AddModifyAction);
+
+            buttonRemove.Click += new System.EventHandler(AddDeleteAction);
+
+            #endregion
         }
 
         private void UpdateSettingControls(int activeEdgeIndex)
@@ -70,9 +94,9 @@ namespace Editor
             UpdateSettingControls(0);
         }
 
-        private void AddModifyAction()
+        private void AddModifyAction(object sender, EventArgs e)
         {
-            if(isActionTrackingDisabled)
+            if (isActionTrackingDisabled || listBoxShapes.Items.Count == 0)
                 return;
             UpdateUndoRedoValues();
 
@@ -84,7 +108,7 @@ namespace Editor
             server.MessageToSend = JsonConvert.SerializeObject(shapes);
         }
 
-        private void AddAddAction()
+        private void AddAddAction(object sender, EventArgs e)
         {
             if (isActionTrackingDisabled)
                 return;
@@ -94,7 +118,7 @@ namespace Editor
             server.MessageToSend = JsonConvert.SerializeObject(shapes);
         }
 
-        private void AddDeleteAction()
+        private void AddDeleteAction(object sender, EventArgs e)
         {
             if (isActionTrackingDisabled)
                 return;
@@ -106,20 +130,13 @@ namespace Editor
 
         private void UpdateUndoRedoValues()
         {
+            // when adding a new action to the list, discard all possible redo actions
             if (currentActionIndex < actions.Count)
                 actions.RemoveRange(currentActionIndex + 1, actions.Count - currentActionIndex - 1);
             currentActionIndex = actions.Count;
 
             undoToolStripMenuItem.Enabled = true;
             redoToolStripMenuItem.Enabled = false;
-        }
-
-        private void Editor_Load(object sender, EventArgs e)
-        {
-            listBoxShapes.DisplayMember = Constants.DISPLAY_MEMBER;
-            listBoxShapes.DataSource = shapes;
-            textBoxName.DataBindings.Add(Constants.BINDING_TEXT, shapes, Constants.BINDING_NAME);
-            panelCircleSettings.Location = panelRectangleSettings.Location;
         }
 
         private void buttonAddShape_Click(object sender, EventArgs e)
@@ -137,8 +154,6 @@ namespace Editor
             // when adding the very first shape selectedindexchanged event is not called so we need to update setting controls manually
             if (shapes.Count == 1)
                 UpdateSettingControls();
-
-            AddAddAction();
         }
 
         private void listBoxShapes_SelectedIndexChanged(object sender, EventArgs e)
@@ -159,8 +174,6 @@ namespace Editor
 
         private void textBoxName_Validated(object sender, EventArgs e)
         {
-            if(listBoxShapes.Items.Count > 0)
-                AddModifyAction();
             // refresh listbox when new text has been typed
             // since RefreshItems is declared as private we need to do a little hack here to call this function
             typeof(ListBox).InvokeMember("RefreshItems",
@@ -169,7 +182,6 @@ namespace Editor
 
         private void buttonRemove_Click(object sender, EventArgs e)
         {
-            AddDeleteAction();
             shapes.RemoveAt(listBoxShapes.SelectedIndex);
 
             if (listBoxShapes.Items.Count <= 0)
@@ -186,8 +198,6 @@ namespace Editor
                 MessageBox.Show(Constants.ERROR_NO_RECTANGLE);
                 return;
             }
-
-            AddModifyAction();
 
             (shapes[listBoxShapes.SelectedIndex] as RectangleShape).EdgePoints[ActiveEdgeIndex] = 
                 new Point(Convert.ToInt32(numericUpDownEdgeX.Value), Convert.ToInt32(numericUpDownEdgeY.Value));
@@ -219,8 +229,6 @@ namespace Editor
                 return;
             }
 
-            AddModifyAction();
-
             (shapes[listBoxShapes.SelectedIndex] as CircleShape).Center =
                new Point(Convert.ToInt32(numericUpDownCenterX.Value), Convert.ToInt32(numericUpDownCenterY.Value));
         }
@@ -232,8 +240,6 @@ namespace Editor
                 MessageBox.Show(Constants.ERROR_NO_CIRCLE);
                 return;
             }
-
-            AddModifyAction();
 
             (shapes[listBoxShapes.SelectedIndex] as CircleShape).Radius = Convert.ToUInt32(numericUpDownRadius.Value);
         }
@@ -256,6 +262,8 @@ namespace Editor
             if (actions[currentActionIndex] is UndoRedo.WorkingActionModifyRectangle)
             {
                 int currentEdgeIndex = (actions[currentActionIndex] as UndoRedo.WorkingActionModifyRectangle).ActiveEdgeIndex;
+
+                // when currentEdgeIndex != ActiveEdgeIndex, index will be set and values will be set in checked_changed-event
                 if (currentEdgeIndex == ActiveEdgeIndex)
                     UpdateEdgePointValues();
                 UpdateSettingControls(currentEdgeIndex);

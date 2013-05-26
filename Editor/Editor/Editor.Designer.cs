@@ -43,8 +43,8 @@
             this.numericUpDownCenterY = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownRadius = new System.Windows.Forms.NumericUpDown();
             this.panelRectangleSettings = new System.Windows.Forms.Panel();
-            this.radioButtonBottomRight = new System.Windows.Forms.RadioButton();
             this.radioButtonBottomLeft = new System.Windows.Forms.RadioButton();
+            this.radioButtonBottomRight = new System.Windows.Forms.RadioButton();
             this.radioButtonTopRight = new System.Windows.Forms.RadioButton();
             this.radioButtonTopLeft = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
@@ -245,8 +245,8 @@
             // 
             // panelRectangleSettings
             // 
-            this.panelRectangleSettings.Controls.Add(this.radioButtonBottomRight);
             this.panelRectangleSettings.Controls.Add(this.radioButtonBottomLeft);
+            this.panelRectangleSettings.Controls.Add(this.radioButtonBottomRight);
             this.panelRectangleSettings.Controls.Add(this.radioButtonTopRight);
             this.panelRectangleSettings.Controls.Add(this.radioButtonTopLeft);
             this.panelRectangleSettings.Controls.Add(this.label3);
@@ -259,29 +259,29 @@
             this.panelRectangleSettings.TabIndex = 6;
             this.panelRectangleSettings.Visible = false;
             // 
-            // radioButtonBottomRight
-            // 
-            this.radioButtonBottomRight.AutoSize = true;
-            this.radioButtonBottomRight.Location = new System.Drawing.Point(258, 12);
-            this.radioButtonBottomRight.Name = "radioButtonBottomRight";
-            this.radioButtonBottomRight.Size = new System.Drawing.Size(86, 17);
-            this.radioButtonBottomRight.TabIndex = 7;
-            this.radioButtonBottomRight.TabStop = true;
-            this.radioButtonBottomRight.Text = "Bottom Right";
-            this.radioButtonBottomRight.UseVisualStyleBackColor = true;
-            this.radioButtonBottomRight.CheckedChanged += new System.EventHandler(this.radioButtonEdge_CheckedChanged);
-            // 
             // radioButtonBottomLeft
             // 
             this.radioButtonBottomLeft.AutoSize = true;
-            this.radioButtonBottomLeft.Location = new System.Drawing.Point(173, 12);
+            this.radioButtonBottomLeft.Location = new System.Drawing.Point(258, 12);
             this.radioButtonBottomLeft.Name = "radioButtonBottomLeft";
             this.radioButtonBottomLeft.Size = new System.Drawing.Size(79, 17);
-            this.radioButtonBottomLeft.TabIndex = 6;
+            this.radioButtonBottomLeft.TabIndex = 7;
             this.radioButtonBottomLeft.TabStop = true;
             this.radioButtonBottomLeft.Text = "Bottom Left";
             this.radioButtonBottomLeft.UseVisualStyleBackColor = true;
             this.radioButtonBottomLeft.CheckedChanged += new System.EventHandler(this.radioButtonEdge_CheckedChanged);
+            // 
+            // radioButtonBottomRight
+            // 
+            this.radioButtonBottomRight.AutoSize = true;
+            this.radioButtonBottomRight.Location = new System.Drawing.Point(173, 12);
+            this.radioButtonBottomRight.Name = "radioButtonBottomRight";
+            this.radioButtonBottomRight.Size = new System.Drawing.Size(86, 17);
+            this.radioButtonBottomRight.TabIndex = 6;
+            this.radioButtonBottomRight.TabStop = true;
+            this.radioButtonBottomRight.Text = "Bottom Right";
+            this.radioButtonBottomRight.UseVisualStyleBackColor = true;
+            this.radioButtonBottomRight.CheckedChanged += new System.EventHandler(this.radioButtonEdge_CheckedChanged);
             // 
             // radioButtonTopRight
             // 
@@ -467,8 +467,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown numericUpDownEdgeY;
-        private System.Windows.Forms.RadioButton radioButtonBottomRight;
         private System.Windows.Forms.RadioButton radioButtonBottomLeft;
+        private System.Windows.Forms.RadioButton radioButtonBottomRight;
         private System.Windows.Forms.RadioButton radioButtonTopRight;
         private System.Windows.Forms.RadioButton radioButtonTopLeft;
         private System.Windows.Forms.Panel panelCircleSettings;
