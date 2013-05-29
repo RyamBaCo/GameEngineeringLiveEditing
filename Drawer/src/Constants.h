@@ -1,4 +1,6 @@
 #pragma once
+#define TEST_FILE_NAME "test.json"
+
 #define KEY_NAME "name"
 #define KEY_TYPE "type"
 #define KEY_RADIUS "radius"

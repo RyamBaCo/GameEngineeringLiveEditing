@@ -118,7 +118,6 @@
     <ClInclude Include="..\src\JsonParser.h" />
     <ClInclude Include="..\src\RectangleShape.h" />
     <ClInclude Include="..\src\Shape.h" />
-    <ClInclude Include="..\src\ShapeValues.h" />
     <ClInclude Include="..\src\TcpShapeClient.h" />
   </ItemGroup>
   <ItemGroup>

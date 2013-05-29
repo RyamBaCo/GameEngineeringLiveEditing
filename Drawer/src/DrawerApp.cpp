@@ -31,6 +31,7 @@ private:
 
 void DrawerApp::setup()
 {
+	JsonParser::parseFromTestFile(shapes);
 	receivedJSON = "";
 
 	tcpClient.sConnected.connect(boost::bind(&DrawerApp::onConnected, this, boost::arg<1>::arg()));

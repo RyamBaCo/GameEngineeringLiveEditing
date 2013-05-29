@@ -1,7 +1,6 @@
 #include "JsonParser.h"
 #include "cinder/Json.h"
 #include "Constants.h"
-#include "ShapeValues.h"
 
 JsonParser::JsonParser()
 {
@@ -12,42 +11,49 @@ JsonParser::~JsonParser()
 {
 }
 
-bool JsonParser::parse(const std::string& fileName, std::list<Shape*>& shapeList)
+bool JsonParser::parseFromTestFile(std::list<Shape*>& shapeList)
+{
+	std::string fileContent;
+
+	try
+	{
+		fileContent = loadString(loadAsset(TEST_FILE_NAME));
+	}
+	catch(Exception ex)
+	{
+		console() << "JsonParser::parseFromFile: Exception when parsing JSON-Values: " << ex.what();
+		return false;
+	}
+
+	return parse(fileContent, shapeList);
+}
+
+bool JsonParser::parse(const std::string& jsonString, std::list<Shape*>& shapeList)
 {
 	for(auto it = shapeList.begin(); it != shapeList.end(); ++it)
 		delete *it;
 	shapeList.clear();
 
-	JsonTree doc(fileName);
-	std::list<JsonTree> shapes = doc.getChildren();
-
-	for(JsonTree::ConstIter shape = shapes.begin(); shape != shapes.end(); ++shape)
+	try
 	{
-		std::list<JsonTree> shapeValues = shape->getChildren();
-		ShapeValues values;
+		JsonTree doc(jsonString);
+		std::list<JsonTree> shapes = doc.getChildren();
 
-		for(JsonTree::ConstIter shapeValue = shapeValues.begin(); shapeValue != shapeValues.end(); ++shapeValue)
+		for(JsonTree::ConstIter shape = shapes.begin(); shape != shapes.end(); ++shape)
 		{
-			std::string key = shapeValue->getKey();
-			if(key == KEY_NAME)
-				values.name = shapeValue->getValue();
-			else if(key == KEY_TYPE)
-				values.type = shapeValue->getValue();
-			else if(key == KEY_RADIUS)
-				values.radius = atoi(shapeValue->getValue().c_str());
-			else if(key == KEY_CENTER)
-				values.centerPoint = convertToVector(shapeValue->getValue());
-			else if(key == KEY_POINTS)
-			{
-				std::list<JsonTree> pointValues = shapeValue->getChildren();
-				int index = 0;
-				for(JsonTree::ConstIter pointValue = pointValues.begin(); pointValue != pointValues.end(); ++pointValue)
-					values.edgePoints[index++] = convertToVector(pointValue->getValue());
-			}
+			std::list<JsonTree> shapeValues = shape->getChildren();
+			Shape* newShape = Shape::create(shape->getChild(KEY_TYPE).getValue());
+			if(!newShape->parseValuesFromJSON(shape))
+				return false;
+			shapeList.push_back(newShape);
 		}
-
-		shapeList.push_back(Shape::create(values));
 	}
+	catch(Exception ex)
+	{
+		console() << "JsonParser::parse: Exception when parsing JSON-Values: " << ex.what();
+		return false;
+	}
+
 	return true;
 }
 

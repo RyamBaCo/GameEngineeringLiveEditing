@@ -1,7 +1,7 @@
 #pragma once
 #include "cinder/app/AppBasic.h"
+#include "cinder/Json.h"
 #include "Constants.h"
-#include "ShapeValues.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -10,5 +10,7 @@ class Shape
 {
 public:
 	virtual void draw() = 0;
-	static Shape* create(const ShapeValues& values);
+	virtual bool parseValuesFromJSON(const JsonTree::ConstIter& values) = 0;
+
+	static Shape* create(const std::string& type);
 };

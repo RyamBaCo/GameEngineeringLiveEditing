@@ -12,9 +12,8 @@ public:
 	JsonParser();
 	~JsonParser();
 
-	static bool parse(const std::string& fileName, std::list<Shape*>& shapeList);
-
-private:
+	static bool parseFromTestFile(std::list<Shape*>& shapeList);
+	static bool parse(const std::string& jsonString, std::list<Shape*>& shapeList);
 	static Vec2i convertToVector(const std::string& value);
 };
 
