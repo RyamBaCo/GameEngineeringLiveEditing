@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using Editor.ShapeControls;
 
 namespace Editor
 {
-    abstract class Shape
+    public abstract class Shape
     {
         [JsonProperty("type")]
         public string Type { get; protected set; }
@@ -14,10 +15,15 @@ namespace Editor
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonIgnoreAttribute]
+        public ShapeControl Control { get; protected set; }
+
         protected Shape()
         {
             Type = "";
             Name = "";
         }
+
+        public abstract void Select();
     }
 }

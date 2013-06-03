@@ -12,8 +12,8 @@ namespace Editor.UndoRedo
         private ListBox shapeList;
         private GroupBox groupBoxShape;
 
-        public WorkingActionAdd(Shape shape, ref BindingList<Shape> shapes, ref ListBox shapeList, ref GroupBox groupBoxShape) 
-            : base(shape, ref shapes)
+        public WorkingActionAdd(Shape shape, BindingList<Shape> shapes, ref ListBox shapeList, ref GroupBox groupBoxShape) 
+            : base(shape, shapes)
         {
             this.shapeList = shapeList;
             this.groupBoxShape = groupBoxShape;

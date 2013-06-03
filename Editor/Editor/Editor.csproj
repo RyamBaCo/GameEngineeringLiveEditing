@@ -49,6 +49,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModificationObserver.cs" />
+    <Compile Include="ShapeControls\CircleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ShapeControls\CircleControl.Designer.cs">
+      <DependentUpon>CircleControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShapeControls\RectangleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ShapeControls\RectangleControl.Designer.cs">
+      <DependentUpon>RectangleControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShapeControls\ShapeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Shapes\CircleShape.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Editor.cs">
@@ -66,7 +82,6 @@
     <Compile Include="UndoRedo\WorkingActionAdd.cs" />
     <Compile Include="UndoRedo\WorkingActionDelete.cs" />
     <Compile Include="UndoRedo\WorkingActionModify.cs" />
-    <Compile Include="UndoRedo\WorkingActionModifyRectangle.cs" />
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>
     </EmbeddedResource>
@@ -79,6 +94,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ShapeControls\CircleControl.resx">
+      <DependentUpon>CircleControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShapeControls\RectangleControl.resx">
+      <DependentUpon>RectangleControl.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -9,16 +9,18 @@ namespace Editor.UndoRedo
 {
     class WorkingActionModify : WorkingAction
     {
-        public WorkingActionModify(Shape shape, ref BindingList<Shape> shapes) : base(shape, ref shapes) { }
+        public WorkingActionModify(Shape shape, BindingList<Shape> shapes) : base(shape, shapes) { }
 
         public override void Undo()
         {
             shapes[listIndex] = Interlocked.Exchange(ref shape, shapes[listIndex]);
+            shapes[listIndex].Control.UpdateControlView();
         }
 
         public override void Redo()
         {
             shapes[listIndex] = Interlocked.Exchange(ref shape, shapes[listIndex]);
+            shapes[listIndex].Control.UpdateControlView();
         }
     }
 }

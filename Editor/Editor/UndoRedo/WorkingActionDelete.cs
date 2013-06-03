@@ -9,7 +9,7 @@ namespace Editor.UndoRedo
 {
     class WorkingActionDelete : WorkingActionAdd
     {
-        public WorkingActionDelete(Shape shape, ref BindingList<Shape> shapes, ref ListBox shapeList, ref GroupBox groupBoxShape) : base(shape, ref shapes, ref shapeList, ref groupBoxShape) { }
+        public WorkingActionDelete(Shape shape, BindingList<Shape> shapes, ref ListBox shapeList, ref GroupBox groupBoxShape) : base(shape, shapes, ref shapeList, ref groupBoxShape) { }
 
         public override void Undo()
         {

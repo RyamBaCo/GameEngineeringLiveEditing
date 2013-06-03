@@ -12,7 +12,7 @@ namespace Editor
         protected BindingList<Shape> shapes;
         protected int listIndex;
 
-        public WorkingAction(Shape shape, ref BindingList<Shape> shapes)
+        public WorkingAction(Shape shape, BindingList<Shape> shapes)
         {
             this.shape = shape;
             this.shapes = shapes;
