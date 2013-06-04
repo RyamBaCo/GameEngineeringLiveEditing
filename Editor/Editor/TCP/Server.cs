@@ -1,12 +1,11 @@
-﻿using System;
-using System.Text;
+﻿using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
-using System.Net;
 
 namespace Editor.TCP
 {
-    class Server
+    internal class Server
     {
         public string MessageToSend { get; set; }
 
@@ -51,7 +50,7 @@ namespace Editor.TCP
                             buffer = encoder.GetBytes(MessageToSend + "\r\n");
                             MessageToSend = "";
                         }
-                            
+
                         NetworkStream clientStream = client.GetStream();
                         clientStream.Write(buffer, 0, buffer.Length);
                         clientStream.Flush();
@@ -66,7 +65,7 @@ namespace Editor.TCP
             {
                 NetworkStream clientStream = tcpClient.GetStream();
 
-                byte[] message = new byte[4096];
+                byte[] message = new byte[Constants.TCP_MESSAGE_SIZE];
                 int bytesRead;
 
                 while (true)
@@ -75,7 +74,7 @@ namespace Editor.TCP
 
                     try
                     {
-                        bytesRead = clientStream.Read(message, 0, 4096);
+                        bytesRead = clientStream.Read(message, 0, Constants.TCP_MESSAGE_SIZE);
                     }
                     catch
                     {
@@ -91,6 +90,5 @@ namespace Editor.TCP
                 }
             }
         }
-        
     }
 }

@@ -45,7 +45,6 @@ private:
 	virtual void do_close();
 
 	virtual void do_reconnect(const boost::system::error_code& error);
-	virtual void do_heartbeat(const boost::system::error_code& error);
 
 private:
 	bool							isConnected;
@@ -54,7 +53,6 @@ private:
 	boost::asio::io_service			ioService;
 	boost::asio::ip::tcp::socket	socket;
 	boost::asio::streambuf			buffer;
-	boost::asio::deadline_timer		heartBeatTimer;
 	boost::asio::deadline_timer		reconnectTimer;
 	std::string						delimiter;
 };

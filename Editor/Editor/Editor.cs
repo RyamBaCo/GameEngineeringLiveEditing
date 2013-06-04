@@ -15,10 +15,27 @@ namespace Editor
     public partial class Editor : Form
     {
         public static BindingList<Shape> Shapes { get; set; }
+
+        private TCP.Server server = new TCP.Server();
         
         public Editor()
         {
             InitializeComponent();
+        }
+
+        private void SendDataToClient()
+        {
+            server.MessageToSend = JsonConvert.SerializeObject(Shapes);
+        }
+
+        private void EnableRedo(bool value)
+        {
+            redoToolStripMenuItem.Enabled = value;
+        }
+
+        private void EnableUndo(bool value)
+        {
+            undoToolStripMenuItem.Enabled = value;
         }
 
         private void Editor_Load(object sender, EventArgs e)
@@ -28,10 +45,15 @@ namespace Editor
             listBoxShapes.DisplayMember = Constants.DISPLAY_MEMBER;
             listBoxShapes.DataSource = Shapes;
             textBoxName.DataBindings.Add(Constants.BINDING_TEXT, Shapes, Constants.BINDING_NAME);
+
+            ModificationObserver.EnableRedoNotifier += new EnableRedoHandler(EnableRedo);
+            ModificationObserver.EnableUndoNotifier += new EnableUndoHandler(EnableUndo);
+            ModificationObserver.UpdateTCPClientNotifier += new UpdateTCPClientHandler(SendDataToClient);
         }
 
         private void buttonAddShape_Click(object sender, EventArgs e)
         {
+            // TODO factory madness
             if (sender == buttonAddRectangle)
                 Shapes.Add(new RectangleShape());
             else
@@ -88,6 +110,8 @@ namespace Editor
                 buttonRemove.Enabled = false;
                 groupBoxShape.Visible = false;
             }
+
+            SendDataToClient();
         }
 
         private void exportToJSONToolStripMenuItem_Click(object sender, EventArgs e)
@@ -101,12 +125,12 @@ namespace Editor
  
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ModificationObserver.PerformUndo(ref undoToolStripMenuItem, ref redoToolStripMenuItem);
+            ModificationObserver.PerformUndo();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ModificationObserver.PerformRedo(ref undoToolStripMenuItem, ref redoToolStripMenuItem);
+            ModificationObserver.PerformRedo();
         }
     }
 }

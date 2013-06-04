@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
 namespace Editor
 {
-    abstract class WorkingAction
+    internal abstract class WorkingAction
     {
         protected Shape shape;
         protected BindingList<Shape> shapes;
@@ -16,10 +13,11 @@ namespace Editor
         {
             this.shape = shape;
             this.shapes = shapes;
-            listIndex = shapes.TakeWhile(s => s != shape).Count() - 1;
+            listIndex = shapes.TakeWhile(s => s != shape).Count();
         }
 
         public abstract void Undo();
+
         public abstract void Redo();
     }
 }

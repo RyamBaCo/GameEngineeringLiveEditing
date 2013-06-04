@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace Editor.UndoRedo
 {
-    class WorkingActionAdd : WorkingAction
+    internal class WorkingActionAdd : WorkingAction
     {
         private ListBox shapeList;
         private GroupBox groupBoxShape;
 
-        public WorkingActionAdd(Shape shape, BindingList<Shape> shapes, ref ListBox shapeList, ref GroupBox groupBoxShape) 
+        public WorkingActionAdd(Shape shape, BindingList<Shape> shapes, ref ListBox shapeList, ref GroupBox groupBoxShape)
             : base(shape, shapes)
         {
             this.shapeList = shapeList;
@@ -21,7 +17,7 @@ namespace Editor.UndoRedo
 
         public override void Undo()
         {
-            shapes.RemoveAt(listIndex + 1);
+            shapes.RemoveAt(listIndex);
 
             if (shapes.Count == 0)
                 groupBoxShape.Visible = false;
@@ -29,8 +25,8 @@ namespace Editor.UndoRedo
 
         public override void Redo()
         {
-            shapes.Add(shape);
-            shapeList.SelectedIndex = shapes.Count - 1;
+            shapes.Insert(listIndex, shape);
+            shapeList.SelectedIndex = listIndex;
             groupBoxShape.Visible = true;
         }
     }

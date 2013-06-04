@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Editor.ShapeControls;
 using Newtonsoft.Json;
-using Editor.ShapeControls;
 
 namespace Editor
 {

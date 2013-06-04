@@ -110,6 +110,7 @@
             this.numericUpDownTopLeftX.Name = "numericUpDownTopLeftX";
             this.numericUpDownTopLeftX.Size = new System.Drawing.Size(53, 20);
             this.numericUpDownTopLeftX.TabIndex = 0;
+            this.numericUpDownTopLeftX.ValueChanged += new System.EventHandler(this.numericUpDownTopLeft_ValueChanged);
             // 
             // numericUpDownTopRightX
             // 

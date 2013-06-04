@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Editor.ShapeControls
 {
     public partial class RectangleControl : ShapeControl
     {
-        static readonly RectangleControl instance = new RectangleControl();
+        private static readonly RectangleControl instance = new RectangleControl();
+
         public static RectangleControl Instance { get { return instance; } }
 
-        NumericUpDown[,] edgeValues;
+        private NumericUpDown[,] edgeValues;
 
         public RectangleControl()
         {
             InitializeComponent();
 
-            edgeValues = new NumericUpDown[,] { 
-                { numericUpDownTopLeftX, numericUpDownTopLeftY },  
-                { numericUpDownTopRightX, numericUpDownTopRightY },  
-                { numericUpDownBottomRightX, numericUpDownBottomRightY },  
-                { numericUpDownBottomLeftX, numericUpDownBottomLeftY },  
+            edgeValues = new NumericUpDown[,] {
+                { numericUpDownTopLeftX, numericUpDownTopLeftY },
+                { numericUpDownTopRightX, numericUpDownTopRightY },
+                { numericUpDownBottomRightX, numericUpDownBottomRightY },
+                { numericUpDownBottomLeftX, numericUpDownBottomLeftY },
             };
         }
 
@@ -44,8 +40,11 @@ namespace Editor.ShapeControls
 
         private void UpdateEdgeValuesAt(int index)
         {
-            ModificationObserver.AddModifyAction(new RectangleShape(CurrentShape as RectangleShape));
+            ModificationObserver.AddModifyAction(CurrentShape, new RectangleShape(CurrentShape as RectangleShape));
             (CurrentShape as RectangleShape).EdgePoints[index] = new Point(Convert.ToInt32(edgeValues[index, 0].Value), Convert.ToInt32(edgeValues[index, 1].Value));
+
+            if (ModificationObserver.UpdateTCPClientNotifier != null)
+                ModificationObserver.UpdateTCPClientNotifier();
         }
 
         private void numericUpDownTopLeft_ValueChanged(object sender, EventArgs e)

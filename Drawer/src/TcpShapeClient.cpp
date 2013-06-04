@@ -7,7 +7,6 @@ TcpShapeClient::TcpShapeClient()
 	:	isConnected(false), 
 		isClosing(false),
 		socket(ioService), 
-		heartBeatTimer(ioService), 
 		reconnectTimer(ioService)
 {	
 	// for servers that terminate their messages with a null-byte
@@ -86,10 +85,6 @@ void TcpShapeClient::handle_connect(const boost::system::error_code& error)
 	{
 		isConnected = true;
 		sConnected(endPoint);
-
-		heartBeatTimer.expires_from_now(boost::posix_time::seconds(5));
-		heartBeatTimer.async_wait(boost::bind(&TcpShapeClient::do_heartbeat, this, boost::asio::placeholders::error));
-
 		read();
 	}
 	else 
@@ -116,10 +111,6 @@ void TcpShapeClient::handle_read(const boost::system::error_code& error)
 
 		// create signal to notify listeners
 		sMessage(msg);
-
-		heartBeatTimer.expires_from_now(boost::posix_time::seconds(5));
-		heartBeatTimer.async_wait(boost::bind(&TcpShapeClient::do_heartbeat, this, boost::asio::placeholders::error));
-
 		read();
 	}
 	else
@@ -156,9 +147,5 @@ void TcpShapeClient::do_reconnect(const boost::system::error_code& error)
 	socket.close();
 	socket.async_connect(endPoint,
         boost::bind(&TcpShapeClient::handle_connect, this, boost::asio::placeholders::error));
-}
-
-void TcpShapeClient::do_heartbeat(const boost::system::error_code& error)
-{
 }
 

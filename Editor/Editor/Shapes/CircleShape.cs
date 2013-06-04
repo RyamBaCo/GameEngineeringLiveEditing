@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using Newtonsoft.Json;
+﻿using System.Drawing;
 using Editor.ShapeControls;
+using Newtonsoft.Json;
 
 namespace Editor
 {
@@ -12,6 +8,7 @@ namespace Editor
     {
         [JsonProperty("center")]
         public Point Center { get; set; }
+
         [JsonProperty("radius")]
         public uint Radius { get; set; }
 

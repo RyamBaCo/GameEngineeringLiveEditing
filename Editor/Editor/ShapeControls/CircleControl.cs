@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Editor.ShapeControls
 {
     public partial class CircleControl : ShapeControl
     {
-        static readonly CircleControl instance = new CircleControl();
+        private static readonly CircleControl instance = new CircleControl();
+
         public static CircleControl Instance { get { return instance; } }
 
         private CircleControl()
@@ -34,14 +29,20 @@ namespace Editor.ShapeControls
 
         private void numericUpDownCenter_ValueChanged(object sender, EventArgs e)
         {
-            ModificationObserver.AddModifyAction(new CircleShape(CurrentShape as CircleShape));
+            ModificationObserver.AddModifyAction(CurrentShape, new CircleShape(CurrentShape as CircleShape));
             (CurrentShape as CircleShape).Center = new Point(Convert.ToInt32(numericUpDownCenterX.Value), Convert.ToInt32(numericUpDownCenterY.Value));
+
+            if (ModificationObserver.UpdateTCPClientNotifier != null)
+                ModificationObserver.UpdateTCPClientNotifier();
         }
 
         private void numericUpDownRadius_ValueChanged(object sender, EventArgs e)
         {
-            ModificationObserver.AddModifyAction(new CircleShape(CurrentShape as CircleShape));
+            ModificationObserver.AddModifyAction(CurrentShape, new CircleShape(CurrentShape as CircleShape));
             (CurrentShape as CircleShape).Radius = Convert.ToUInt32(numericUpDownRadius.Value);
+
+            if (ModificationObserver.UpdateTCPClientNotifier != null)
+                ModificationObserver.UpdateTCPClientNotifier();
         }
     }
 }
